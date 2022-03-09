@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv"
+        android:layout_width="match_parent"
+        android:layout_height="303dp"
+        android:layout_margin="30dp"
+        android:gravity="center"
+        android:text="0 걸음"
+        android:textStyle="bold"
+        android:textSize="40sp"
+        android:background="@drawable/customline" />
+
+    <Button
+        android:id="@+id/btn"
+        android:layout_width="298dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/custombtn"
+        android:layout_gravity="center"
+        android:textSize="25sp"
+        android:text="초기화" />
+
+</LinearLayout>
