@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -41,24 +42,32 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     int DATA_Z = SensorManager.DATA_Z;
 
     SensorManager manager;
-    Sensor stepCount;
+    Sensor accelerometerSnesor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        manager = (SensorManager)getSystemService(SENSOR_SERVICE); // 시스템 서비스 객체이므로 객체를 생성하지 않고 객체의 참조값을 얻어야함
+        accelerometerSnesor = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER); // 가속도 센서(중력 가속도)
+
         tv = (TextView) findViewById(R.id.tv);
-        Button btn = (Button) findViewById(R.id.btn);
-        btn.setOnClickListener(new View.OnClickListener() {
+        Button resetBtn = (Button) findViewById(R.id.resetBtn);
+        resetBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 resetConfirm();
             }
         });
 
-        manager = (SensorManager)getSystemService(SENSOR_SERVICE); // 시스템 서비스 객체이므로 객체를 생성하지 않고 객체의 참조값을 얻어야함
-        stepCount = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER); // 가속도 센서(중력 가속도)
+        Button resultBtn = (Button)findViewById(R.id.resultBtn);
+        resultBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //showResult();
+            }
+        });
     }
 
     @Override
@@ -93,8 +102,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onStart() {
         super.onStart();
 
-        if(stepCount != null) { // 센서가 널이면
-            manager.registerListener(this, stepCount, SensorManager.SENSOR_DELAY_GAME); // 센서 관리자로 센서 딜레이 설정
+        if(accelerometerSnesor != null) { // 센서가 널이면
+            manager.registerListener(this, accelerometerSnesor, SensorManager.SENSOR_DELAY_GAME); // 센서 관리자로 센서 딜레이 설정
         }
     }
 
@@ -102,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onStop() {
         super.onStop();
 
-        if(stepCount != null) { // 센서가 널이면
+        if(accelerometerSnesor != null) { // 센서가 널이면
             manager.unregisterListener(this); // 센서 감지 해제
         }
     }

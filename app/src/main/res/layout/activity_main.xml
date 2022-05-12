@@ -16,7 +16,7 @@
         android:background="@drawable/customline" />
 
     <Button
-        android:id="@+id/btn"
+        android:id="@+id/resetBtn"
         android:layout_width="298dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
@@ -24,5 +24,15 @@
         android:layout_gravity="center"
         android:textSize="25sp"
         android:text="초기화" />
+
+    <Button
+        android:id="@+id/resultBtn"
+        android:layout_width="298dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/custombtn"
+        android:layout_gravity="center"
+        android:textSize="25sp"
+        android:text="결과 보기" />
 
 </LinearLayout>
