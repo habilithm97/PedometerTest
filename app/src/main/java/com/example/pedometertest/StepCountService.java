@@ -60,7 +60,7 @@ public class StepCountService extends Service implements SensorEventListener {
             z = event.values[SensorManager.DATA_Z];
             speed = Math.abs(x + y + z - lastX - lastY - lastZ) / gabOfTime * 10000;
 
-            if(speed > SHAKE_THRESHOLD) { // Intent에 서비스를 담아서 보냄
+            if(speed > SHAKE_THRESHOLD) { // Intent에 서비스를 담아서 MainActivity의 방송 수신자 클래스로 보냄
                 Intent intent = new Intent("com.example.pedometertest");
 
                 StepCount.Step = cnt++;
@@ -81,7 +81,6 @@ public class StepCountService extends Service implements SensorEventListener {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+       return null;
     }
 }

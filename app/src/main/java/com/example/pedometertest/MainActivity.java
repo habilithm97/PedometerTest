@@ -3,8 +3,11 @@ package com.example.pedometertest;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -13,6 +16,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /*
 *센서
@@ -27,30 +31,67 @@ import android.widget.TextView;
  -시스템 서비스 객체이므로 객체를 생성하지 않고 객체의 참조값을 얻어야함
  -getDefaultSensor() 메서드가 가장 많이 사용되는데 주어진 타입에 대한 디폴트 센서를 얻을 수 있음
  */
-public class MainActivity extends AppCompatActivity implements SensorEventListener {
+public class MainActivity extends AppCompatActivity {
+    
+    Intent pedometerService;
+    BroadcastReceiver receiver; // 방송 수신자
+    boolean flag = true;
+    String serviceData;
+    Button startBtn;
 
     TextView tv;
 
+    /*
     int cnt = 0; // 걸음수 초기값
-
     long lastTime; // 최근 측정한 시간
-
     float x, y, z, speed, lastX, lastY, lastZ;
     int SHAKE_THRESHOLD = 800; // 민감도 -> 작을 수록 느린 스피드에서도 감지를 함
     int DATA_X = SensorManager.DATA_X;
     int DATA_Y = SensorManager.DATA_Y;
     int DATA_Z = SensorManager.DATA_Z;
-
     SensorManager manager;
     Sensor accelerometerSnesor;
+     */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        pedometerService = new Intent(this, StepCountService.class);
+        receiver = new StartReceiver(); // 방송 수신자
+
+        startBtn = (Button)findViewById(R.id.startBtn);
+        startBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(flag) { // true
+                    try {
+                        startBtn.setText("멈추기");
+                        IntentFilter intentFilter = new IntentFilter("com.example.pedometertest");
+
+                        registerReceiver(receiver, intentFilter); // receiver 객체와 IntentFilter 객체를 파라미터로 해서 방송 수신자를 등록함
+                        startService(pedometerService);
+                    } catch (Exception e) {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                } else { // false
+                    startBtn.setText("시작");
+                    try {
+                        unregisterReceiver(receiver); // 방송 수신자 해제
+                        stopService(pedometerService);
+                    } catch (Exception e) {
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                }
+                flag = !flag; // 상태 토글
+            }
+        });
+
+        /*
         manager = (SensorManager)getSystemService(SENSOR_SERVICE); // 시스템 서비스 객체이므로 객체를 생성하지 않고 객체의 참조값을 얻어야함
         accelerometerSnesor = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER); // 가속도 센서(중력 가속도)
+         */
 
         tv = (TextView) findViewById(R.id.tv);
         Button resetBtn = (Button) findViewById(R.id.resetBtn);
@@ -70,6 +111,37 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         });
     }
 
+    class StartReceiver extends BroadcastReceiver {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // 서비스 클래스에서 Intent를 받아와서 TextView에 출력
+            serviceData = intent.getStringExtra("stepCountService");
+            tv.setText(serviceData);
+        }
+    }
+
+    public void resetConfirm() {
+        final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setTitle("걸음수 초기화");
+        builder.setMessage("걸음수를 정말 초기화하시겠습니까 ?");
+        builder.setIcon(R.drawable.warning);
+        builder.setPositiveButton("예",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                });
+        builder.setNegativeButton("아니오",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+        builder.show();
+    }
+}
+
+    /*
     @Override
     public void onSensorChanged(SensorEvent sensorEvent) { // 여기서 센서를 동작 시킴(흔듬 감지)
         if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) { // 가속도 센서
@@ -115,25 +187,5 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             manager.unregisterListener(this); // 센서 감지 해제
         }
     }
+     */
 
-    public void resetConfirm() {
-        final AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-        builder.setTitle("걸음수 초기화");
-        builder.setMessage("걸음수를 정말 초기화하시겠습니까 ?");
-        builder.setIcon(R.drawable.warning);
-        builder.setPositiveButton("예",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        cnt = 0;
-                        tv.setText(cnt + " 걸음");
-                    }
-                });
-        builder.setNegativeButton("아니오",
-                new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-        builder.show();
-    }
-}
