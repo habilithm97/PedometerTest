@@ -34,7 +34,7 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
     
     Intent pedometerService;
-    BroadcastReceiver receiver; // 방송 수신자
+    BroadcastReceiver receiver;
     boolean flag = true;
     String serviceData;
     Button startBtn;
@@ -65,8 +65,9 @@ public class MainActivity extends AppCompatActivity {
         startBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(flag) { // true
+                if(flag) { // true 상태면
                     try {
+                        // false로 토글되면서
                         startBtn.setText("멈추기");
                         IntentFilter intentFilter = new IntentFilter("com.example.pedometertest");
 
@@ -75,7 +76,8 @@ public class MainActivity extends AppCompatActivity {
                     } catch (Exception e) {
                         Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                } else { // false
+                } else { // false 상태면
+                    // true로 토글되면서
                     startBtn.setText("시작");
                     try {
                         unregisterReceiver(receiver); // 방송 수신자 해제
@@ -84,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
-                flag = !flag; // 상태 토글
+                flag = !flag; // 버튼을 누를 때마다 상태 토글
             }
         });
 
@@ -129,10 +131,11 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("예",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        if(flag) {
+                        if(flag) { // true 상태면
+                            // 초기화
                             StepCount.Step = 0;
                             tv.setText("0");
-                        } else {
+                        } else { // fasle 상태면
                             Toast.makeText(getApplicationContext(), "먼저 만보기를 멈춰주세요. ", Toast.LENGTH_SHORT).show();
                         }
                     }

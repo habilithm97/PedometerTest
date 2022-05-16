@@ -8,12 +8,14 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.IBinder;
 
+// 백그라운드 실행을 위해 서비스 클래스 별도 생성
+// SensorEventListener : 센서 값이 변경되거나 센서 이벤트의 정보를 제공하는 센서 이벤트 객체를 생성
 public class StepCountService extends Service implements SensorEventListener {
 
     int cnt = StepCount.Step;
     long lastTime;
     float x, y, z, speed, lastX, lastY, lastZ;
-    int SHAKE_THRESHOLD = 800; // 민감도 -> 작을 수록 느린 스피드에서도 감지를 함
+    int SHAKE_THRESHOLD = 800; // 민감도 -> 작을 수록 느린 스피드에서도 감지
 
     SensorManager manager;
     Sensor accelerometerSensor;
@@ -21,16 +23,16 @@ public class StepCountService extends Service implements SensorEventListener {
     @Override
     public void onCreate() {
         super.onCreate();
-        manager = (SensorManager)getSystemService(SENSOR_SERVICE);
-        accelerometerSensor = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        manager = (SensorManager)getSystemService(SENSOR_SERVICE); // 센서 서비스의 인스턴스를 만들 수 있음
+        accelerometerSensor = manager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER); // 특정 센서의 인스턴스를 만들 수 있음(센서의 기능을 결정할 수 있음)
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         super.onStartCommand(intent, flags, startId);
 
-        if(accelerometerSensor != null) { // 센서가 널이면
-            manager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_GAME); // 센서 관리자로 센서 딜레이 설정
+        if(accelerometerSensor != null) { // 센서가 널이 아니면
+            manager.registerListener(this, accelerometerSensor, SensorManager.SENSOR_DELAY_GAME); // 센서 관리자로 센서 딜레이 설정 후 등록
         }
         return START_STICKY; // 서비스가 강제 종료 되었을 경우 시스템이 Intent 값을 null로 초기화 시켜서 서비스를 재시작함
     }
@@ -39,7 +41,8 @@ public class StepCountService extends Service implements SensorEventListener {
     public void onDestroy() {
         super.onDestroy();
 
-        if (manager != null) {
+        if (manager != null) { // 센서 매니저가 널이 아니면
+            // SensorEventListener 해제
             manager.unregisterListener(this);
             StepCount.Step = 0;
         }
