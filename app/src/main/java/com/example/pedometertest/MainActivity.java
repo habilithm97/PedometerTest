@@ -129,6 +129,12 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("예",
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        if(flag) {
+                            StepCount.Step = 0;
+                            tv.setText("0");
+                        } else {
+                            Toast.makeText(getApplicationContext(), "먼저 만보기를 멈춰주세요. ", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
         builder.setNegativeButton("아니오",
